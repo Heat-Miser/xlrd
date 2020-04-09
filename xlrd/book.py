@@ -787,7 +787,7 @@ class Book(BaseObject):
                 "BOUNDSHEET: inx=%d vis=%r sheet_name=%r abs_posn=%d sheet_type=0x%02x\n",
                 self._all_sheets_count, visibility, sheet_name, abs_posn, sheet_type)
         self._all_sheets_count += 1
-        if sheet_type != XL_BOUNDSHEET_WORKSHEET:
+        if sheet_type != XL_BOUNDSHEET_WORKSHEET and sheet_type != XL_BOUNDSHEET_WORKSHEET01:
             self._all_sheets_map.append(-1)
             descr = {
                 1: 'Macro sheet',
@@ -1362,6 +1362,9 @@ class Book(BaseObject):
         if (rqd_stream == XL_WORKBOOK_GLOBALS and got_globals) or streamtype == rqd_stream:
             return version
         if version < 50 and streamtype == XL_WORKSHEET:
+            return version
+        if version == 80 and streamtype == XL_WORKSHEET_SPECIAL:
+            # Special case for zloader
             return version
         if version >= 50 and streamtype == 0x0100:
             bof_error("Workspace file -- no spreadsheet data")
